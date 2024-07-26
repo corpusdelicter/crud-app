@@ -6,15 +6,13 @@ trigger:
 pr:
   branches:
     include:
-      - main  
+      - main
 
 pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  - group: docker-registry-variable
-  - name: imageName
-    value: 'crudapp'  
+  imageName: 'crudapp'  
 
 stages:
 - stage: Build
@@ -23,26 +21,15 @@ stages:
   - job: Build
     displayName: 'Build job'
     steps:
-    - script: |
-        echo $(Build.BuildId)
-        az acr build --registry viper --image $(imageName):$(Build.BuildId) .
-      displayName: 'Build Docker Image'
-
-    - task: ArchiveFiles@2
+    - task: AzureCLI@2
       inputs:
-        rootFolderOrFile: '$(Pipeline.Workspace)'
-        includeRootFolder: false
-        archiveType: 'zip'
-        archiveFile: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
-        replaceExistingArchive: true
-      displayName: 'Archive Files'
-
-    - task: PublishPipelineArtifact@1
-      inputs:
-        targetPath: '$(Pipeline.Workspace)/drop'
-        artifact: 'drop'
-        publishLocation: 'pipeline'
-      displayName: 'Publish Pipeline Artifact'
+        azureSubscription: 'xmen-connection'  
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          echo $(Build.BuildId)
+          az acr build --registry viper --image $(imageName):$(Build.BuildId) .
+        addSpnToEnvironment: true
 
 - stage: Deploy
   displayName: 'Deploy stage'
@@ -51,17 +38,17 @@ stages:
   - job: Deploy
     displayName: 'Deploy job'
     steps:
-    - task: DownloadPipelineArtifact@2
-      inputs:
-        artifact: 'drop'
-      displayName: 'Download Pipeline Artifact'
+    - download: current
+      artifact: drop
 
-    - script: |
-        az webapp config container set --name crudapp1 --resource-group crudapp --docker-custom-image-name viper.azurecr.io/$(imageName):$(Build.BuildId) --docker-registry-server-url https://viper.azurecr.io --docker-registry-server-user $(dockerRegistryUsername) --docker-registry-server-password $(dockerRegistryPassword)
-      displayName: 'Configure Web App Container'
-      env:
-        dockerRegistryUsername: $(dockerRegistryUsername)
-        dockerRegistryPassword: $(dockerRegistryPassword)
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'xmen-connection'  
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az webapp config container set --name crudapp1 --resource-group crudapp --docker-custom-image-name viper.azurecr.io/$(imageName):$(Build.BuildId) --docker-registry-server-url https://viper.azurecr.io --docker-registry-server-user $(dockerRegistryUsername) --docker-registry-server-password $(dockerRegistryPassword)
+        addSpnToEnvironment: true
 
     - task: AzureWebApp@1
       inputs:
@@ -73,10 +60,9 @@ stages:
         dockerRepository: $(imageName)
         dockerImageTag: $(Build.BuildId)
         startupCommand: ''
-      displayName: 'Deploy to Azure Web App'
 
 resources:
   containers:
   - container: azurecli
     image: mcr.microsoft.com/azure-cli
-    endpoint: xmen-registry
+    endpoint: xmen-connection
