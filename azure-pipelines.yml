@@ -1,12 +1,12 @@
 trigger:
   branches:
     include:
-      - main  # Replace with your branch
+      - main 
 
 pr:
   branches:
     include:
-      - main  # Replace with your branch
+      - main  
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -14,7 +14,7 @@ pool:
 variables:
   - group: docker-registry-variable
   - name: imageName
-    value: 'crudapp'  # Replace with your app's name
+    value: 'crudapp'  
 
 stages:
 - stage: Build
@@ -25,7 +25,7 @@ stages:
     steps:
     - task: AzureCLI@2
       inputs:
-        azureSubscription: 'xmen-connection'  # Replace with your Azure subscription service connection
+        azureSubscription: 'xmen-connection'  
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
@@ -34,7 +34,7 @@ stages:
 
     - task: PublishPipelineArtifact@1
       inputs:
-        targetPath: '$(Pipeline.Workspace)'
+        targetPath: '$(Pipeline.Workspace)/drop'
         artifact: 'drop'
         publishLocation: 'pipeline'
 
@@ -50,7 +50,7 @@ stages:
 
     - task: AzureCLI@2
       inputs:
-        azureSubscription: 'xmen-connection'  # Replace with your Azure subscription service connection
+        azureSubscription: 'xmen-connection'  
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
@@ -59,9 +59,9 @@ stages:
 
     - task: AzureWebApp@1
       inputs:
-        azureSubscription: 'xmen-connection'  # Replace with your Azure subscription service connection
-        appName: 'crudapp1'  # Replace with your app service name
-        resourceGroupName: 'crudapp'  # Replace with your resource group name
+        azureSubscription: 'xmen-connection'  
+        appName: 'crudapp1' 
+        resourceGroupName: 'crudapp'  
         deployToSlotOrASE: false
         dockerNamespace: 'viper.azurecr.io'
         dockerRepository: $(imageName)
@@ -70,6 +70,4 @@ stages:
 
 resources:
   containers:
-  - container: azurecli
-    image: mcr.microsoft.com/azure-cli
-    endpoint: xmen-registry
+  -
