@@ -10,8 +10,8 @@ variables:
   acrName: 'viper'  # Update this with your ACR name
   acrLoginServer: 'viper.azurecr.io'  # Update this with your ACR login server
   azureSubscription: 'xmen1'  # Update this with your Azure subscription
-  appServiceName: 'crudapp'  # Update this with your Azure App Service name
-  resourceGroupName: 'crudapp_group'  # Update this with your Azure resource group name
+  appServiceName: 'crudapp1'  # Update this with your Azure App Service name
+  resourceGroupName: 'crudapp'  # Update this with your Azure resource group name
 
 stages:
 - stage: Build
