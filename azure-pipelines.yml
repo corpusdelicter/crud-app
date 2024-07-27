@@ -34,7 +34,7 @@ stages:
 
     - task: PublishPipelineArtifact@1
       inputs:
-        targetPath: '$(Pipeline.Workspace)'
+        targetPath: '$(Pipeline.Workspace)/artifact-directory'
         artifact: 'drop'
         publishLocation: 'pipeline'
 
@@ -47,6 +47,7 @@ stages:
     steps:
     - download: current
       artifact: 'drop'
+      patterns: '**/*.zip'
 
     - task: AzureCLI@2
       inputs:
