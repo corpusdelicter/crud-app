@@ -31,14 +31,13 @@ stages:
         inlineScript: |
           echo $(Build.BuildId)
           az acr build --registry viper --image $(imageName):$(Build.BuildId) .
-          
+    
     - script: |
         mkdir -p $(Pipeline.Workspace)/output
-        echo "Build directory contents:"
-        ls -la $(Pipeline.Workspace)
-        echo "Output directory contents:"
-        ls -la $(Pipeline.Workspace)/output
-      displayName: 'Create and List Output Directory'
+        # Replace with the actual build output command
+        # For example, assuming the build output is in 'output' directory
+        zip -r $(Pipeline.Workspace)/output/artifact.zip output
+      displayName: 'Create ZIP file of build output'
 
     - task: PublishPipelineArtifact@1
       inputs:
@@ -55,6 +54,12 @@ stages:
     steps:
     - download: current
       artifact: 'drop'
+
+    - script: |
+        unzip $(Pipeline.Workspace)/drop/artifact.zip -d $(Pipeline.Workspace)/drop
+        echo "Artifact contents:"
+        ls -la $(Pipeline.Workspace)/drop
+      displayName: 'Unzip Artifact'
 
     - task: AzureCLI@2
       inputs:
