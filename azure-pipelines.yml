@@ -34,9 +34,6 @@ stages:
 
     - script: |
         mkdir -p $(Pipeline.Workspace)/output
-        echo "Build output directory created"
-        # Replace this with the actual build output command
-        # For demonstration, we're creating a dummy file
         echo "Sample build output" > $(Pipeline.Workspace)/output/sample.txt
         echo "Build directory contents:"
         ls -la $(Pipeline.Workspace)
@@ -45,12 +42,10 @@ stages:
       displayName: 'Create Output Directory and Generate Dummy File'
 
     - script: |
-        if [ -d "$(Pipeline.Workspace)/output" ] && [ "$(ls -A $(Pipeline.Workspace)/output)" ]; then
-          zip -r $(Pipeline.Workspace)/output/artifact.zip $(Pipeline.Workspace)/output/*
-        else
-          echo "No files to zip"
-          exit 1
-        fi
+        cd $(Pipeline.Workspace)/output
+        zip -r artifact.zip *
+        echo "ZIP file created:"
+        ls -la $(Pipeline.Workspace)/output
       displayName: 'Create ZIP file of build output'
 
     - task: PublishPipelineArtifact@1
