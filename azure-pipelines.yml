@@ -34,7 +34,7 @@ stages:
 
     - task: PublishPipelineArtifact@1
       inputs:
-        targetPath: '$(Pipeline.Workspace)'  # Ensure this path exists
+        targetPath: '$(Pipeline.Workspace)/output'  # Ensure this path exists and matches your build output
         artifact: 'drop'
         publishLocation: 'pipeline'
 
