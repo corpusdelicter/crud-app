@@ -31,12 +31,26 @@ stages:
         inlineScript: |
           echo $(Build.BuildId)
           az acr build --registry viper --image $(imageName):$(Build.BuildId) .
-    
+
     - script: |
         mkdir -p $(Pipeline.Workspace)/output
-        # Replace with the actual build output command
-        # For example, assuming the build output is in 'output' directory
-        zip -r $(Pipeline.Workspace)/output/artifact.zip output
+        echo "Build output directory created"
+        # Replace this with the actual build output command
+        # For demonstration, we're creating a dummy file
+        echo "Sample build output" > $(Pipeline.Workspace)/output/sample.txt
+        echo "Build directory contents:"
+        ls -la $(Pipeline.Workspace)
+        echo "Output directory contents:"
+        ls -la $(Pipeline.Workspace)/output
+      displayName: 'Create Output Directory and Generate Dummy File'
+
+    - script: |
+        if [ -d "$(Pipeline.Workspace)/output" ] && [ "$(ls -A $(Pipeline.Workspace)/output)" ]; then
+          zip -r $(Pipeline.Workspace)/output/artifact.zip $(Pipeline.Workspace)/output/*
+        else
+          echo "No files to zip"
+          exit 1
+        fi
       displayName: 'Create ZIP file of build output'
 
     - task: PublishPipelineArtifact@1
