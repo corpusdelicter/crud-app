@@ -31,10 +31,18 @@ stages:
         inlineScript: |
           echo $(Build.BuildId)
           az acr build --registry viper --image $(imageName):$(Build.BuildId) .
+          
+    - script: |
+        mkdir -p $(Pipeline.Workspace)/output
+        echo "Build directory contents:"
+        ls -la $(Pipeline.Workspace)
+        echo "Output directory contents:"
+        ls -la $(Pipeline.Workspace)/output
+      displayName: 'Create and List Output Directory'
 
     - task: PublishPipelineArtifact@1
       inputs:
-        targetPath: '$(Pipeline.Workspace)/output'  # Ensure this path exists and matches your build output
+        targetPath: '$(Pipeline.Workspace)/output'
         artifact: 'drop'
         publishLocation: 'pipeline'
 
