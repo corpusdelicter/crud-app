@@ -14,7 +14,7 @@ pool:
 variables:
   - group: docker-registry-variable
   - name: imageName
-    value: 'crudapp'  # Replace with your app's name
+    value: 'crudapp'
 
 stages:
 - stage: Build
@@ -25,7 +25,7 @@ stages:
     steps:
     - task: AzureCLI@2
       inputs:
-        azureSubscription: 'xmen-connection'  # Replace with your Azure subscription service connection
+        azureSubscription: 'gratisan'  # Replace with your Azure subscription service connection
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
@@ -72,18 +72,18 @@ stages:
 
     - task: AzureCLI@2
       inputs:
-        azureSubscription: 'xmen-connection'  # Replace with your Azure subscription service connection
+        azureSubscription: 'gratisan'  # Replace with your Azure subscription service connection
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
-          az webapp config container set --name crudapp1 --resource-group crudapp --docker-custom-image-name viper.azurecr.io/$(imageName):$(Build.BuildId) --docker-registry-server-url https://viper.azurecr.io --docker-registry-server-user $(dockerRegistryUsername) --docker-registry-server-password $(dockerRegistryPassword)
+          az webapp config container set --name crudapp-2 --resource-group gratisan1 --docker-custom-image-name viper.azurecr.io/$(imageName):$(Build.BuildId) --docker-registry-server-url https://viper.azurecr.io --docker-registry-server-user $(dockerRegistryUsername) --docker-registry-server-password $(dockerRegistryPassword)
         addSpnToEnvironment: true
 
     - task: AzureWebApp@1
       inputs:
-        azureSubscription: 'xmen-connection'  # Replace with your Azure subscription service connection
-        appName: 'crudapp1'  # Replace with your app service name
-        resourceGroupName: 'crudapp'  # Replace with your resource group name
+        azureSubscription: 'gratisan'  # Replace with your Azure subscription service connection
+        appName: 'crudapp-2'  # Replace with your app service name
+        resourceGroupName: 'gratisan1'  # Replace with your resource group name
         deployToSlotOrASE: false
         dockerNamespace: 'viper.azurecr.io'
         dockerRepository: $(imageName)
